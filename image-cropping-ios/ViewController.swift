@@ -15,6 +15,13 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     let croppedImageView = UIImageView()
     let imagePicker = UIImagePickerController()
     @IBOutlet weak var methodSwitch: UISwitch!
+    @IBOutlet weak var xTextField: UITextField!
+    @IBOutlet weak var yTextField: UITextField!
+    @IBOutlet weak var widthTextField: UITextField!
+    @IBOutlet weak var heightTextField: UITextField!
+    
+    
+    
     //    let selectImageButton1 = UIButton()
 //    let selectImageButton2 = UIButton()
     
@@ -35,22 +42,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         
         let viewWidth = view.frame.width
         let viewHeight = view.frame.height
-        
-//        selectImageButton1.frame = CGRect(x: viewWidth / 5, y: viewHeight * 3/5, width: viewWidth * 3/5, height: viewHeight / 8)
-//        selectImageButton1.setTitle("select image and crop with method 1", for: .normal)
-//        selectImageButton1.layer.borderColor = UIColor.black.cgColor
-//        selectImageButton1.backgroundColor = .blue
-//        selectImageButton1.addTarget(self, action: #selector(selectImage1), for: .touchUpInside)
-//        selectImageButton1.titleLabel?.numberOfLines = 0
-//        view.addSubview(selectImageButton1)
-//
-//        selectImageButton2.frame = CGRect(x: viewWidth / 5, y: viewHeight * 4/5, width: viewWidth * 3/5, height: viewHeight / 8)
-//        selectImageButton2.setTitle("select image and crop with method 2", for: .normal)
-//        selectImageButton2.layer.borderColor = UIColor.black.cgColor
-//        selectImageButton2.backgroundColor = .blue
-//        selectImageButton2.addTarget(self, action: #selector(selectImage2), for: .touchUpInside)
-//        selectImageButton2.titleLabel?.numberOfLines = 0
-//        view.addSubview(selectImageButton2)
 
         print("Original image view width: \(viewWidth * 3 / 5)")
         print("Original image view height: \(viewHeight * 2/5)")
@@ -126,9 +117,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         print("croppedImage.scale: \(image.scale)")
         print("imageView.frame: \(imageView.frame)")
         print("croppedImageView.frame: \(croppedImageView.frame)")
-        
+      
         if useMethod1 {
-            let factor = imageView.frame.width/image.size.width
+            let factor = view.frame.width/image.size.width
+            let factorY = view.frame.height / image.size.height
             print("factorX: \(factor)")
             let rect = CGRect(x: cropRect.origin.x / factor, y: cropRect.origin.y / factor, width: cropRect.width / factor, height: cropRect.height / factor)
             print("adjusted Rect for Crop: \(rect)")
@@ -141,15 +133,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         // Resize Image View to the aspect ratio of the image
         let aspectRatio = (image.size.width / image.size.height)
         print("Image Aspect Ratio (width/height): \(aspectRatio)")
-        let factorY = imageView.frame.height/image.size.height
-        print("factorY: \(factorY)")
-        let heightDivWidth = image.size.height / image.size.width
-        print("heightDivWidth: \(heightDivWidth)")
-        let adjustedImageHeightPixels = heightDivWidth * imageView.frame.width
-        print("adjustedImageHeightPixels: \(adjustedImageHeightPixels)")
-        let adjustedImageHeightPoints = adjustedImageHeightPixels * factorY
-        print("adjustedImageHeightPoints: \(adjustedImageHeightPoints)")
-
+    
         
         imageView.image = image
         let originalFrame = imageView.frame
@@ -157,11 +141,17 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         
         dismiss(animated: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8, execute: { [unowned self] in
+            let imageHeightDivWidth = image.size.height / image.size.width
+            let adjustedImageHeightPixels = imageHeightDivWidth * view.frame.width
+            print("imageHeightDivWidth: \(imageHeightDivWidth)")
+            print("adjustedImageHeightPixels: \(imageHeightDivWidth)")
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            imageViewHeightConstraint?.constant = adjustedImageHeightPixels
+            
             let factor = imageView.frame.width/image.size.width
             let adjustedCropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.width , height: cropRect.height)
             // Disable Existing Constraints so we can programmatically adjust them after the fact
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            imageViewHeightConstraint?.constant = adjustedImageHeightPoints
+            
             print("adjustedCropRect: \(adjustedCropRect)")
             addCropRectangle(adjustedCropRect)
             self.croppedImageView.image = croppedImage
