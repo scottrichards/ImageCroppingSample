@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController, UINavigationControllerDelegate {
     let cameraViewAspectRatio: CGFloat = 1.367      // The aspect ratio of the camera preview
-    let cropRect = CGRect(x: 200, y: 0, width: 50, height: 50)
+    var cropRect = CGRect(x: 100, y: 20, width: 50, height: 50)
     let imageView = UIImageView()
     let croppedImageView = UIImageView()
     let imagePicker = UIImagePickerController()
@@ -20,12 +20,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var widthTextField: UITextField!
     @IBOutlet weak var heightTextField: UITextField!
     
+    @IBOutlet weak var screenCoordinates: UILabel!
+    @IBOutlet weak var imageCoordinates: UILabel!
     
     
-    //    let selectImageButton1 = UIButton()
-//    let selectImageButton2 = UIButton()
-    
-    // change this value as you want!
     var useFirstCroppingMethod = true
     var imageViewHeightConstraint: NSLayoutConstraint?
     var selectedImage: UIImage?
@@ -33,6 +31,19 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     var useMethod1: Bool {
         return methodSwitch.isOn
     }
+    
+    var imageCoordinateString: String {
+        if let selectedImage = selectedImage {
+            return "\(selectedImage.size.width) x \(selectedImage.size.height)"
+        } else {
+            return ""
+        }
+    }
+
+    var screenCoordinateString: String {
+        return "\(imageView.frame.size.width) x \(imageView.frame.size.height)"
+    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,8 +58,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         print("Original image view height: \(viewHeight * 2/5)")
         let imageViewHeight = viewWidth * cameraViewAspectRatio
         imageView.frame = CGRect(x: 0, y: 0, width: viewWidth, height: imageViewHeight)
-        imageView.layer.borderColor = UIColor.black.cgColor
-        imageView.layer.borderWidth = 2
+        imageView.layer.borderColor = UIColor.darkGray.cgColor
+        imageView.layer.borderWidth = 1
         imageView.contentMode = .scaleAspectFit
         view.addSubview(imageView)
         imageView.makeConstraints(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, trailing: view.trailingAnchor, bottom: nil, topMargin: 0, leftMargin: 0, rightMargin: 0, bottomMargin: 0, width: viewWidth, height: imageViewHeight)
@@ -66,9 +77,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         present(imagePicker, animated: true, completion: nil)
     }
     
-        
-    
-    
     /// Returns the Gold Bounding Rectangle to indicate a selection
     func createSampleRectLayerWithBounds(_ bounds: CGRect) -> CALayer {
         let shapeLayer = CALayer()
@@ -77,8 +85,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         shapeLayer.name = "Found Object"
         shapeLayer.borderColor = UIColor.systemYellow.cgColor
         shapeLayer.borderWidth = 2
-//      Don't have the rectangle filled in
-//        shapeLayer.backgroundColor = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [1.0, 1.0, 0.2, 0.4])
         shapeLayer.cornerRadius = 2
         return shapeLayer
     }
@@ -106,8 +112,12 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         return croppedImage!
     }
     
-    func doCropImage(image: UIImage) {
+    func updateUI() {
         
+    }
+    
+    func doCropImage(image: UIImage) {
+        selectedImage = image
         print("image.size: \(image.size)")
         print("image.scale: \(image.scale)")
         // change this value as you want!
