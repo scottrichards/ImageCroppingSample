@@ -51,7 +51,7 @@
                                         <rect key="frame" x="128" y="28" width="50" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="W:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T7p-Jk-G3e">
                                         <rect key="frame" x="188" y="36" width="20" height="21"/>
@@ -64,13 +64,13 @@
                                         <rect key="frame" x="220" y="29" width="50" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="50" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="oWe-y2-4CT">
                                         <rect key="frame" x="309" y="28" width="50" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="H:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fow-kC-esS">
                                         <rect key="frame" x="284" y="35" width="17" height="21"/>
@@ -156,6 +156,9 @@
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Crop"/>
+                                <connections>
+                                    <action selector="onCropImage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="h0K-m4-pHb"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2ai-GA-H7j">
                                 <rect key="frame" x="20" y="817" width="374" height="45"/>
@@ -197,6 +200,8 @@
                     </view>
                     <connections>
                         <outlet property="croppedImageView" destination="mPB-Cu-ffE" id="8kv-hT-hCL"/>
+                        <outlet property="croppedImageViewHeight" destination="uWT-uN-sSL" id="tmA-8y-Dg1"/>
+                        <outlet property="croppedImageViewWidth" destination="Arp-we-9Nz" id="k8o-Yw-wo4"/>
                         <outlet property="heightTextField" destination="oWe-y2-4CT" id="cF2-WW-kNu"/>
                         <outlet property="imageCoordinates" destination="HOu-li-K1g" id="b0d-9U-113"/>
                         <outlet property="imageView" destination="LnO-ZQ-VTg" id="FbG-Al-Zne"/>
