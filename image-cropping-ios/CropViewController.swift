@@ -8,12 +8,12 @@
 
 import UIKit
 
-class ViewController: UIViewController, UINavigationControllerDelegate {
+class CropViewController: UIViewController, UINavigationControllerDelegate {
     let cameraViewAspectRatio: CGFloat = 1.367      // The aspect ratio of the camera preview
     var cropRect = CGRect(x: 100, y: 20, width: 50, height: 50)
-    let imageView = UIImageView()
+//    let imageView = UIImageView()
     let imagePicker = UIImagePickerController()
-    
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var croppedImageView: UIImageView!
     @IBOutlet weak var methodSwitch: UISwitch!
     @IBOutlet weak var xTextField: UITextField!
@@ -23,10 +23,11 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     
     @IBOutlet weak var screenCoordinates: UILabel!
     @IBOutlet weak var imageCoordinates: UILabel!
+    @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint!
     
     
     var useFirstCroppingMethod = true
-    var imageViewHeightConstraint: NSLayoutConstraint?
+//    var imageViewHeightConstraint: NSLayoutConstraint?
     var selectedImage: UIImage?
     
     var useMethod1: Bool {
@@ -35,7 +36,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     
     var imageCoordinateString: String {
         if let selectedImage = selectedImage {
-            return "\(Int(selectedImage.size.width)) x \(Int(selectedImage.size.height))"
+            // For some reason the Frame does not get updated correctly have to use Height Constraints
+            return "\(Int(selectedImage.size.width)) x \(Int(imageViewHeightConstraint!.constant))"
         } else {
             return ""
         }
@@ -58,14 +60,15 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         print("Original image view width: \(viewWidth * 3 / 5)")
         print("Original image view height: \(viewHeight * 2/5)")
         let imageViewHeight = viewWidth * cameraViewAspectRatio
-        imageView.frame = CGRect(x: 0, y: 0, width: viewWidth, height: imageViewHeight)
+//        imageView.frame = CGRect(x: 0, y: 0, width: viewWidth, height: imageViewHeight)
         imageView.layer.borderColor = UIColor.darkGray.cgColor
         imageView.layer.borderWidth = 1
         imageView.contentMode = .scaleAspectFit
         view.addSubview(imageView)
-        imageView.makeConstraints(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, trailing: view.trailingAnchor, bottom: nil, topMargin: 0, leftMargin: 0, rightMargin: 0, bottomMargin: 0, width: viewWidth, height: imageViewHeight)
-        imageViewHeightConstraint = NSLayoutConstraint(item: imageView, attribute: NSLayoutConstraint.Attribute.height, relatedBy: NSLayoutConstraint.Relation.equal, toItem: nil, attribute: NSLayoutConstraint.Attribute.notAnAttribute, multiplier: 1, constant: imageViewHeight)
-        imageView.addConstraints([imageViewHeightConstraint!])
+//        imageView.makeConstraints(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, trailing: view.trailingAnchor, bottom: nil, topMargin: 0, leftMargin: 0, rightMargin: 0, bottomMargin: 0, width: viewWidth, height: imageViewHeight)
+//        imageViewHeightConstraint = NSLayoutConstraint(item: imageView, attribute: NSLayoutConstraint.Attribute.height, relatedBy: NSLayoutConstraint.Relation.equal, toItem: nil, attribute: NSLayoutConstraint.Attribute.notAnAttribute, multiplier: 1, constant: imageViewHeight)
+//        imageView.translatesAutoresizingMaskIntoConstraints = false
+//        imageView.addConstraints([imageViewHeightConstraint!])
         
 //        croppedImageView.frame = CGRect(x:20, y: imageView.frame.origin.y + imageView.frame.size.height + 20, width: cropRect.width, height: cropRect.height)
         croppedImageView.layer.borderColor = UIColor.black.cgColor
@@ -131,7 +134,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         let adjustedImageHeightPixels = imageHeightDivWidth * view.frame.width
         print("imageHeightDivWidth: \(imageHeightDivWidth)")
         print("adjustedImageHeightPixels: \(imageHeightDivWidth)")
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageViewHeightConstraint?.constant = adjustedImageHeightPixels
         updateUI()
     }
@@ -172,7 +174,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
 }
 
 
-extension ViewController: UIImagePickerControllerDelegate {
+extension CropViewController: UIImagePickerControllerDelegate {
     // MARK: - UIImagePickerControllerDelegate
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
