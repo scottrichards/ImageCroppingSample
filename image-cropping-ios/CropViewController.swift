@@ -59,6 +59,9 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         let viewWidth = view.frame.width
         let viewHeight = view.frame.height
 
+        let onTapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap(_:)))
+        self.view.addGestureRecognizer(onTapGesture)
+        
         print("Original image view width: \(viewWidth * 3 / 5)")
         print("Original image view height: \(viewHeight * 2/5)")
 //        let imageViewHeight = viewWidth * cameraViewAspectRatio
@@ -99,6 +102,19 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     }
     
     @IBAction func onCropImage(_ sender: Any) {
+        guard let selectedImage = selectedImage else {
+            return
+        }
+        doCropImage(image: selectedImage)
+    }
+    
+    @objc func onTap(_ tapGesture: UITapGestureRecognizer) {
+        let pointTapped : CGPoint = tapGesture.location(in: self.imageView)
+        print("Tapped in View at : \(pointTapped)")
+        print("old crop rect: \(cropRect)")
+        let newCropRect = CGRect(origin: pointTapped, size: cropRect.size)
+        cropRect = newCropRect
+        print("New crop rect: \(cropRect)")
         guard let selectedImage = selectedImage else {
             return
         }
