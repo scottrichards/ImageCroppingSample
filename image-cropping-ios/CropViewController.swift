@@ -31,6 +31,8 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     var useFirstCroppingMethod = true
 //    var imageViewHeightConstraint: NSLayoutConstraint?
     var selectedImage: UIImage?
+    var pinching: Bool = false
+    var pinchingStartDimension: CGFloat?
     
     var useMethod1: Bool {
         return methodSwitch.isOn
@@ -61,6 +63,9 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
 
         let onTapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap(_:)))
         self.imageView.addGestureRecognizer(onTapGesture)
+        
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(onPinch(_:)))
+        self.imageView.addGestureRecognizer(pinchGesture)
         
         print("Original image view width: \(viewWidth * 3 / 5)")
         print("Original image view height: \(viewHeight * 2/5)")
@@ -107,12 +112,45 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         }
         doCropImage(image: selectedImage)
     }
+
+    // When a user pinches in the imageView resize the cropped image to reflect the change in size
+    @objc func onPinch(_ pinchGesture: UIPinchGestureRecognizer) {
+        if pinchGesture.state == .began {
+            pinching = true
+            pinchingStartDimension = cropRect.width
+        }
+        if pinchGesture.state == .changed {
+            print("Pinched old cropRect: \(cropRect)")
+            print("pinchGesture.scale: \(pinchGesture.scale)")
+            guard let pinchingStartDimension = pinchingStartDimension else {
+                return
+            }
+            let insetByWidth = pinchingStartDimension * pinchGesture.scale
+            print("insetByWidth: \(insetByWidth)")
+            let newCropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: insetByWidth, height: insetByWidth)
+//            let newCropRect = cropRect.insetBy(dx: (cropRect.width * pinchGesture.scale)/2, dy: (cropRect.height * pinchGesture.scale)/2)
+//            print("Pinched new cropRect: \(newCropRect)")
+            cropRect = newCropRect
+            guard let selectedImage = selectedImage else {
+                return
+            }
+            doCropImage(image: selectedImage)
+            setupTextFields()
+        }
+        if pinchGesture.state == .cancelled || pinchGesture.state == .ended || pinchGesture.state == .failed {
+            pinching = false
+            pinchingStartDimension = nil
+        }
+    }
     
+    // When a user taps in the imageView redo the cropped image section and update the rectangle selection
     @objc func onTap(_ tapGesture: UITapGestureRecognizer) {
         let pointTapped : CGPoint = tapGesture.location(in: self.imageView)
         print("Tapped in View at : \(pointTapped)")
         print("old crop rect: \(cropRect)")
-        let newCropRect = CGRect(origin: pointTapped, size: cropRect.size)
+        // Adjust the origin so that the rectangle is centered around where the user tapped
+        let adjustedOrigin = CGPoint(x: pointTapped.x - (cropRect.width / 2), y: pointTapped.y - (cropRect.height / 2))
+        let newCropRect = CGRect(origin: adjustedOrigin, size: cropRect.size)
         cropRect = newCropRect
         print("New crop rect: \(cropRect)")
         guard let selectedImage = selectedImage else {
@@ -134,6 +172,7 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         return shapeLayer
     }
     
+    // Add an overlay rectangle to indicate the cropped section at the specified rect
     private func addCropRectangle(_ rect: CGRect) {
         CATransaction.begin()
         CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
@@ -150,6 +189,8 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         }
     }
     
+    
+    // Method 1 of cropping an image at the specified rect
     func cropImage1(image: UIImage, rect: CGRect) -> UIImage {
         let cgImage = image.cgImage!
         let croppedCGImage = cgImage.cropping(to: rect)
@@ -186,6 +227,8 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         updateUI()
     }
     
+    
+    // Crops the image by the specified cropRect and displays it in the croppedImageView also calles resizeImageView to resize the image View to maintain the images aspect ratio
     func doCropImage(image: UIImage) {
         removeAllRectangles()
         resizeImageView(image: image)
