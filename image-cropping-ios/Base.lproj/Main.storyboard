@@ -123,7 +123,7 @@
                                     <constraint firstAttribute="height" constant="32" id="9YS-s4-nDw"/>
                                 </constraints>
                             </view>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LnO-ZQ-VTg">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="RedFlower" translatesAutoresizingMaskIntoConstraints="NO" id="LnO-ZQ-VTg">
                                 <rect key="frame" x="0.0" y="153" width="414" height="300"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="300" id="neB-mS-MlC"/>
@@ -219,6 +219,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="RedFlower" width="600" height="450"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

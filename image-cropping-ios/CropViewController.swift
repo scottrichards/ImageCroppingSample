@@ -39,14 +39,14 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     var imageCoordinateString: String {
         if let selectedImage = selectedImage {
             // For some reason the Frame does not get updated correctly have to use Height Constraints
-            return "\(Int(selectedImage.size.width)) x \(Int(imageViewHeightConstraint!.constant))"
+            return "\(Int(selectedImage.size.width)) x \(Int(selectedImage.size.height))"
         } else {
             return ""
         }
     }
 
     var screenCoordinateString: String {
-        return "\(Int(imageView.frame.size.width)) x \(Int(imageView.frame.size.height))"
+        return "\(Int(view.frame.size.width)) x \(Int(imageViewHeightConstraint.constant))"
     }
 
     
@@ -61,7 +61,7 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
 
         print("Original image view width: \(viewWidth * 3 / 5)")
         print("Original image view height: \(viewHeight * 2/5)")
-        let imageViewHeight = viewWidth * cameraViewAspectRatio
+//        let imageViewHeight = viewWidth * cameraViewAspectRatio
 //        imageView.frame = CGRect(x: 0, y: 0, width: viewWidth, height: imageViewHeight)
         imageView.layer.borderColor = UIColor.darkGray.cgColor
         imageView.layer.borderWidth = 1
@@ -75,10 +75,23 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         croppedImageView.layer.borderColor = UIColor.black.cgColor
         croppedImageView.layer.borderWidth = 1
         croppedImageView.contentMode = .scaleAspectFit
+        setupTextFields()
+        self.selectedImage = self.imageView.image
+        guard let selectedImage = selectedImage else {
+            return
+        }
+        doCropImage(image: selectedImage)
+    }
+    
+    func setupTextFields() {
         xTextField.delegate = self
         yTextField.delegate = self
         widthTextField.delegate = self
         heightTextField.delegate = self
+        xTextField.text = String(format: "%d", Int(cropRect.origin.x))
+        yTextField.text = String(format: "%d", Int(cropRect.origin.y))
+        widthTextField.text = String(format: "%d", Int(cropRect.size.width))
+        heightTextField.text = String(format: "%d", Int(cropRect.size.height))
     }
     
     @IBAction func onSelectImage(_ sender: Any) {
@@ -150,10 +163,10 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         let aspectRatio = (image.size.width / image.size.height)
         print("Image Aspect Ratio (width/height): \(aspectRatio)")
         let imageHeightDivWidth = image.size.height / image.size.width
-        let adjustedImageHeightPixels = imageHeightDivWidth * view.frame.width
+        let adjustedImageViewHeightPixels = imageHeightDivWidth * view.frame.width
         print("imageHeightDivWidth: \(imageHeightDivWidth)")
-        print("adjustedImageHeightPixels: \(imageHeightDivWidth)")
-        imageViewHeightConstraint?.constant = adjustedImageHeightPixels
+        print("adjustedImageViewHeightPixels: \(adjustedImageViewHeightPixels)")
+        imageViewHeightConstraint?.constant = adjustedImageViewHeightPixels
         updateUI()
     }
     
@@ -242,5 +255,9 @@ extension CropViewController: UITextFieldDelegate {
         if textField == heightTextField, let textFieldString = textField.text, let heightValue = Int(textFieldString), heightValue > 0 {
             cropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: CGFloat(heightValue))
         }
+        guard let selectedImage = selectedImage else {
+            return
+        }
+        doCropImage(image: selectedImage)
     }
 }
