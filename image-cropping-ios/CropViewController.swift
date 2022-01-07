@@ -60,7 +60,7 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         let viewHeight = view.frame.height
 
         let onTapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap(_:)))
-        self.view.addGestureRecognizer(onTapGesture)
+        self.imageView.addGestureRecognizer(onTapGesture)
         
         print("Original image view width: \(viewWidth * 3 / 5)")
         print("Original image view height: \(viewHeight * 2/5)")
@@ -119,6 +119,7 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
             return
         }
         doCropImage(image: selectedImage)
+        setupTextFields()
     }
     
     /// Returns the Gold Bounding Rectangle to indicate a selection
@@ -148,7 +149,6 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
             }
         }
     }
-    
     
     func cropImage1(image: UIImage, rect: CGRect) -> UIImage {
         let cgImage = image.cgImage!
