@@ -12,8 +12,9 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     let cameraViewAspectRatio: CGFloat = 1.367      // The aspect ratio of the camera preview
     var cropRect = CGRect(x: 100, y: 20, width: 50, height: 50)
     let imageView = UIImageView()
-    let croppedImageView = UIImageView()
     let imagePicker = UIImagePickerController()
+    
+    @IBOutlet weak var croppedImageView: UIImageView!
     @IBOutlet weak var methodSwitch: UISwitch!
     @IBOutlet weak var xTextField: UITextField!
     @IBOutlet weak var yTextField: UITextField!
@@ -34,14 +35,14 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     
     var imageCoordinateString: String {
         if let selectedImage = selectedImage {
-            return "\(selectedImage.size.width) x \(selectedImage.size.height)"
+            return "\(Int(selectedImage.size.width)) x \(Int(selectedImage.size.height))"
         } else {
             return ""
         }
     }
 
     var screenCoordinateString: String {
-        return "\(imageView.frame.size.width) x \(imageView.frame.size.height)"
+        return "\(Int(imageView.frame.size.width)) x \(Int(imageView.frame.size.height))"
     }
 
     
@@ -66,11 +67,11 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         imageViewHeightConstraint = NSLayoutConstraint(item: imageView, attribute: NSLayoutConstraint.Attribute.height, relatedBy: NSLayoutConstraint.Relation.equal, toItem: nil, attribute: NSLayoutConstraint.Attribute.notAnAttribute, multiplier: 1, constant: imageViewHeight)
         imageView.addConstraints([imageViewHeightConstraint!])
         
-        croppedImageView.frame = CGRect(x:20, y: imageView.frame.origin.y + imageView.frame.size.height + 20, width: cropRect.width, height: cropRect.height)
+//        croppedImageView.frame = CGRect(x:20, y: imageView.frame.origin.y + imageView.frame.size.height + 20, width: cropRect.width, height: cropRect.height)
         croppedImageView.layer.borderColor = UIColor.black.cgColor
         croppedImageView.layer.borderWidth = 1
         croppedImageView.contentMode = .scaleAspectFit
-        view.addSubview(croppedImageView)
+//        view.addSubview(croppedImageView)
     }
     
     @IBAction func onSelectImage(_ sender: Any) {
@@ -113,13 +114,30 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     }
     
     func updateUI() {
-        
+        screenCoordinates.text = screenCoordinateString
+        imageCoordinates.text = imageCoordinateString
     }
     
-    func doCropImage(image: UIImage) {
+    // Resize the image View to reflect the Aspect Ratio of the selected image
+    func resizeImageView(image: UIImage) {
+        imageView.image = image
         selectedImage = image
         print("image.size: \(image.size)")
         print("image.scale: \(image.scale)")
+        // Resize Image View to the aspect ratio of the image
+        let aspectRatio = (image.size.width / image.size.height)
+        print("Image Aspect Ratio (width/height): \(aspectRatio)")
+        let imageHeightDivWidth = image.size.height / image.size.width
+        let adjustedImageHeightPixels = imageHeightDivWidth * view.frame.width
+        print("imageHeightDivWidth: \(imageHeightDivWidth)")
+        print("adjustedImageHeightPixels: \(imageHeightDivWidth)")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageViewHeightConstraint?.constant = adjustedImageHeightPixels
+        updateUI()
+    }
+    
+    func doCropImage(image: UIImage) {
+        resizeImageView(image: image)
         // change this value as you want!
         print("cropRect: \(cropRect)")
         let croppedImage: UIImage
@@ -140,36 +158,16 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
             croppedImage = cropImage2(image: image, rect: cropRect, scale: scale)
         }
         
-        // Resize Image View to the aspect ratio of the image
-        let aspectRatio = (image.size.width / image.size.height)
-        print("Image Aspect Ratio (width/height): \(aspectRatio)")
-    
         
-        imageView.image = image
-        let originalFrame = imageView.frame
-        let croppedFrame = CGRect(x: originalFrame.origin.x + cropRect.origin.x, y: originalFrame.origin.y + cropRect.origin.y, width: cropRect.width, height: cropRect.height)
+//        let croppedFrame = CGRect(x: imageView.frame.origin.x + cropRect.origin.x, y: imageView.frame.origin.y + cropRect.origin.y, width: cropRect.width, height: cropRect.height)
+            
+//            let factor = imageView.frame.width/image.size.width
+        let adjustedCropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.width , height: cropRect.height)
+        // Disable Existing Constraints so we can programmatically adjust them after the fact
         
-        dismiss(animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8, execute: { [unowned self] in
-            let imageHeightDivWidth = image.size.height / image.size.width
-            let adjustedImageHeightPixels = imageHeightDivWidth * view.frame.width
-            print("imageHeightDivWidth: \(imageHeightDivWidth)")
-            print("adjustedImageHeightPixels: \(imageHeightDivWidth)")
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            imageViewHeightConstraint?.constant = adjustedImageHeightPixels
-            
-            let factor = imageView.frame.width/image.size.width
-            let adjustedCropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.width , height: cropRect.height)
-            // Disable Existing Constraints so we can programmatically adjust them after the fact
-            
-            print("adjustedCropRect: \(adjustedCropRect)")
-            addCropRectangle(adjustedCropRect)
-            self.croppedImageView.image = croppedImage
-//            self.croppedImageView.frame = croppedFrame
-//            UIView.animate(withDuration: 1.0) { [unowned self] in
-//                self.imageView.frame = originalFrame
-//            }
-        })
+        print("adjustedCropRect: \(adjustedCropRect)")
+        addCropRectangle(cropRect)
+        self.croppedImageView.image = croppedImage
     }
 }
 
@@ -188,6 +186,7 @@ extension ViewController: UIImagePickerControllerDelegate {
         } else {
             return
         }
+        dismiss(animated: true)
         doCropImage(image: image)
     }
 }
