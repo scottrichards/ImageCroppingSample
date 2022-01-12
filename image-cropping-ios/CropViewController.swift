@@ -8,8 +8,15 @@
 
 import UIKit
 
+enum ToolType {
+    case crop
+    case colorPicker
+}
+
 class CropViewController: UIViewController, UINavigationControllerDelegate {
     let cameraViewAspectRatio: CGFloat = 1.367      // The aspect ratio of the camera preview
+    let defaultCropToolImageViewSize = CGSize(width: 200.0, height: 200.0)    // default size of cropped Image View when croping
+    let defaultColorPickerImageViewSize = CGSize(width: 200.0, height: 200.0)   // default size of cropped Image when color picker is active
     var cropRect = CGRect(x: 100, y: 20, width: 50, height: 50)
 //    let imageView = UIImageView()
     let imagePicker = UIImagePickerController()
@@ -27,12 +34,34 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var croppedImageViewWidth: NSLayoutConstraint!
     @IBOutlet weak var croppedImageViewHeight: NSLayoutConstraint!
     
+    var croppedImageViewSize: CGSize = CGSize(width: 50.0, height: 50.0) {
+        didSet {
+            croppedImageViewWidth.constant = croppedImageViewSize.width
+            croppedImageViewHeight.constant = croppedImageViewSize.height
+        }
+    }
     
     var useFirstCroppingMethod = true
 //    var imageViewHeightConstraint: NSLayoutConstraint?
     var selectedImage: UIImage?
     var pinching: Bool = false
     var pinchingStartDimension: CGFloat?
+    @IBOutlet weak var toolTypeControl: UISegmentedControl!
+    
+    var toolType: ToolType = .crop {
+        didSet {
+            switch toolType {
+            case .crop:
+                croppedImageViewWidth.constant = defaultCropToolImageViewSize.width
+                croppedImageViewHeight.constant = defaultCropToolImageViewSize.height
+                cropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: 50, height: 50)
+            case .colorPicker:
+                croppedImageViewWidth.constant = defaultColorPickerImageViewSize.width
+                croppedImageViewHeight.constant = defaultColorPickerImageViewSize.height
+                cropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: 50, height: 50)
+            }
+        }
+    }
     
     var useMethod1: Bool {
         return methodSwitch.isOn
@@ -262,8 +291,8 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         print("adjustedCropRect: \(adjustedCropRect)")
         addCropRectangle(cropRect)
         self.croppedImageView.image = croppedImage
-        croppedImageViewWidth.constant = cropRect.width
-        croppedImageViewHeight.constant = cropRect.height
+//        croppedImageViewWidth.constant = cropRect.width
+//        croppedImageViewHeight.constant = cropRect.height
     }
     
     // Override touchesBegan in the textfields parent UIViewController to dismiss the keyboard when tapping outside of any textfield
@@ -271,7 +300,16 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         self.view.endEditing(true)
     }
 
-
+    
+    @IBAction func onToolChange(_ sender: Any) {
+        if toolTypeControl.selectedSegmentIndex == 0 {
+            toolType = .crop
+        }
+        if toolTypeControl.selectedSegmentIndex == 1 {
+            toolType = .colorPicker
+        }
+    }
+    
 }
 
 

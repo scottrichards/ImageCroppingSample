@@ -130,10 +130,10 @@
                                 </constraints>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mPB-Cu-ffE">
-                                <rect key="frame" x="20" y="478" width="50" height="50"/>
+                                <rect key="frame" x="107" y="523" width="200" height="200"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="Arp-we-9Nz"/>
-                                    <constraint firstAttribute="height" constant="50" id="uWT-uN-sSL"/>
+                                    <constraint firstAttribute="width" constant="200" id="Arp-we-9Nz"/>
+                                    <constraint firstAttribute="height" constant="200" id="uWT-uN-sSL"/>
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2ai-GA-H7j">
@@ -160,13 +160,23 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="56b-Us-K8w">
+                                <rect key="frame" x="112.5" y="475" width="189" height="31"/>
+                                <segments>
+                                    <segment title="Crop"/>
+                                    <segment title="Color Picker"/>
+                                </segments>
+                                <connections>
+                                    <action selector="onToolChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="5n4-og-jqT"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="mPB-Cu-ffE" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="BO6-g0-XqV"/>
                             <constraint firstItem="WTj-Vk-9o8" firstAttribute="leading" secondItem="c1S-Jn-6FE" secondAttribute="trailing" constant="22" id="Czc-NK-zWP"/>
                             <constraint firstItem="2ai-GA-H7j" firstAttribute="top" secondItem="c1S-Jn-6FE" secondAttribute="bottom" constant="20" id="FCk-nV-l8j"/>
+                            <constraint firstItem="mPB-Cu-ffE" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="GPb-mk-29S"/>
                             <constraint firstItem="k0S-Ab-274" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="JtN-Fq-kzu"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2ai-GA-H7j" secondAttribute="trailing" constant="20" id="LCn-Aq-5nd"/>
                             <constraint firstItem="2ai-GA-H7j" firstAttribute="top" secondItem="WTj-Vk-9o8" secondAttribute="bottom" constant="25" id="NNp-ug-VyB"/>
@@ -178,10 +188,13 @@
                             <constraint firstItem="LnO-ZQ-VTg" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="WA2-Xe-9lw"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Cuc-DH-l1f" secondAttribute="trailing" constant="20" id="Ywh-fM-p6w"/>
                             <constraint firstItem="LnO-ZQ-VTg" firstAttribute="top" secondItem="Cuc-DH-l1f" secondAttribute="bottom" constant="8" symbolic="YES" id="c3c-8s-beR"/>
-                            <constraint firstItem="mPB-Cu-ffE" firstAttribute="top" secondItem="LnO-ZQ-VTg" secondAttribute="bottom" constant="25" id="ggs-2w-54x"/>
+                            <constraint firstItem="mPB-Cu-ffE" firstAttribute="top" secondItem="LnO-ZQ-VTg" secondAttribute="bottom" constant="70" id="ggs-2w-54x"/>
+                            <constraint firstItem="56b-Us-K8w" firstAttribute="top" secondItem="LnO-ZQ-VTg" secondAttribute="bottom" constant="22" id="kj9-8P-FME"/>
                             <constraint firstItem="2ai-GA-H7j" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="o7a-Jt-Ua2"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="WTj-Vk-9o8" secondAttribute="trailing" constant="20" id="tRL-Gm-7zq"/>
+                            <constraint firstItem="mPB-Cu-ffE" firstAttribute="top" secondItem="56b-Us-K8w" secondAttribute="bottom" constant="18" id="wMy-Ic-33I"/>
                             <constraint firstItem="c1S-Jn-6FE" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="wdL-VP-8GK"/>
+                            <constraint firstItem="56b-Us-K8w" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="xG5-PM-J3D"/>
                         </constraints>
                     </view>
                     <connections>
@@ -194,6 +207,7 @@
                         <outlet property="imageViewHeightConstraint" destination="neB-mS-MlC" id="7Qf-2L-tmX"/>
                         <outlet property="methodSwitch" destination="c1S-Jn-6FE" id="k11-6w-yMv"/>
                         <outlet property="screenCoordinates" destination="KKA-uw-LiU" id="5Bu-N1-fvR"/>
+                        <outlet property="toolTypeControl" destination="56b-Us-K8w" id="nID-oQ-qpH"/>
                         <outlet property="widthTextField" destination="80H-nS-R9e" id="FHW-mZ-uzL"/>
                         <outlet property="xTextField" destination="IFT-vK-c8F" id="Sai-G7-Rpz"/>
                         <outlet property="yTextField" destination="zkw-ZT-qks" id="b8P-sv-2ZQ"/>

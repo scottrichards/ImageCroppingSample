@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		017DE19A278CE19F00CCEF00 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017DE199278CE19F00CCEF00 /* UIImage+.swift */; };
 		01BE445B2786EFCF00898C99 /* UIView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BE445A2786EFCF00898C99 /* UIView+.swift */; };
 		D92B8C4A220EA9B70028EA9D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92B8C49220EA9B70028EA9D /* AppDelegate.swift */; };
 		D92B8C4C220EA9B70028EA9D /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92B8C4B220EA9B70028EA9D /* CropViewController.swift */; };
@@ -27,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		017DE199278CE19F00CCEF00 /* UIImage+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		01BE445A2786EFCF00898C99 /* UIView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+.swift"; sourceTree = "<group>"; };
 		D92B8C46220EA9B70028EA9D /* image-cropping-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "image-cropping-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D92B8C49220EA9B70028EA9D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -58,6 +60,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		017DE198278CE18500CCEF00 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				01BE445A2786EFCF00898C99 /* UIView+.swift */,
+				017DE199278CE19F00CCEF00 /* UIImage+.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		D92B8C3D220EA9B70028EA9D = {
 			isa = PBXGroup;
 			children = (
@@ -79,13 +90,13 @@
 		D92B8C48220EA9B70028EA9D /* image-cropping-ios */ = {
 			isa = PBXGroup;
 			children = (
+				017DE198278CE18500CCEF00 /* Extensions */,
 				D92B8C49220EA9B70028EA9D /* AppDelegate.swift */,
 				D92B8C4B220EA9B70028EA9D /* CropViewController.swift */,
 				D92B8C4D220EA9B70028EA9D /* Main.storyboard */,
 				D92B8C50220EA9B80028EA9D /* Assets.xcassets */,
 				D92B8C52220EA9B80028EA9D /* LaunchScreen.storyboard */,
 				D92B8C55220EA9B80028EA9D /* Info.plist */,
-				01BE445A2786EFCF00898C99 /* UIView+.swift */,
 			);
 			path = "image-cropping-ios";
 			sourceTree = "<group>";
@@ -201,6 +212,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01BE445B2786EFCF00898C99 /* UIView+.swift in Sources */,
+				017DE19A278CE19F00CCEF00 /* UIImage+.swift in Sources */,
 				D92B8C4C220EA9B70028EA9D /* CropViewController.swift in Sources */,
 				D92B8C4A220EA9B70028EA9D /* AppDelegate.swift in Sources */,
 			);
