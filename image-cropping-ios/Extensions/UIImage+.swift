@@ -54,4 +54,17 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return croppedImage
     }
+    
+    func debugPrintOrientation() -> String {
+        switch self.imageOrientation {
+        case .up : return "up"
+        case .upMirrored: return "upMirrored"
+        case .down: return "down"
+        case .downMirrored: return "downMirrored"
+        case .left: return "left"
+        case .leftMirrored: return "leftMirrored"
+        case .right: return "right"
+        case .rightMirrored: return "rightMirrored"
+        }
+    }
 }

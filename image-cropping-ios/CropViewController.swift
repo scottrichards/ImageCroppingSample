@@ -22,7 +22,6 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     let imagePicker = UIImagePickerController()
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var croppedImageView: UIImageView!
-    @IBOutlet weak var methodSwitch: UISwitch!
     @IBOutlet weak var xTextField: UITextField!
     @IBOutlet weak var yTextField: UITextField!
     @IBOutlet weak var widthTextField: UITextField!
@@ -33,6 +32,9 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var croppedImageViewWidth: NSLayoutConstraint!
     @IBOutlet weak var croppedImageViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var croppedImageCoordinateLabel: UILabel!
+    @IBOutlet weak var imageViewLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
     
     var croppedImageViewSize: CGSize = CGSize(width: 50.0, height: 50.0) {
         didSet {
@@ -40,9 +42,12 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
             croppedImageViewHeight.constant = croppedImageViewSize.height
         }
     }
+
+    // Can not rely in the imageView.frame to update correctly so we update it here
+    var imageViewSize = CGSize()
     
     var useFirstCroppingMethod = true
-//    var imageViewHeightConstraint: NSLayoutConstraint?
+
     var selectedImage: UIImage?
     var pinching: Bool = false
     var pinchingStartDimension: CGFloat?
@@ -63,10 +68,6 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         }
     }
     
-    var useMethod1: Bool {
-        return methodSwitch.isOn
-    }
-    
     var imageCoordinateString: String {
         if let selectedImage = selectedImage {
             // For some reason the Frame does not get updated correctly have to use Height Constraints
@@ -77,7 +78,11 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     }
 
     var screenCoordinateString: String {
-        return "\(Int(view.frame.size.width)) x \(Int(imageViewHeightConstraint.constant))"
+        return "\(Int(imageViewSize.width)) x \(Int(imageViewSize.height))"
+    }
+    
+    var cropViewRectString: String {
+        return "\(String(format: "%d", Int(cropRect.origin.x))), \(String(format: "%d", Int(cropRect.origin.y))), \(String(format: "%d", Int(cropRect.size.width))), \(String(format: "%d", Int(cropRect.size.height)))"
     }
 
     
@@ -219,24 +224,31 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     }
     
     
-    // Method 1 of cropping an image at the specified rect
-    func cropImage1(image: UIImage, rect: CGRect) -> UIImage {
-        let cgImage = image.cgImage!
-        let croppedCGImage = cgImage.cropping(to: rect)
-        return UIImage(cgImage: croppedCGImage!, scale: image.scale, orientation: image.imageOrientation)
-    }
+    // Crop an image at the specified rect, using CGImage Crop
+//    func cgImageCrop(image: UIImage, rect: CGRect) -> UIImage? {
+//        let cgImage = image.cgImage!
+//        if let croppedCGImage = cgImage.cropping(to: rect) {
+//            debugPrint("imageOrientation: \(image.debugPrintOrientation())")
+//            return UIImage(cgImage: croppedCGImage, scale: image.scale, orientation: image.imageOrientation)
+//        } else {
+//            return nil
+//        }
+//
+//    }
     
-    func cropImage2(image: UIImage, rect: CGRect, scale: CGFloat) -> UIImage {
+    // Crop an image at the specified rect, using ImageContext cropping
+    func imageContextCrop(image: UIImage, rect: CGRect, scale: CGFloat) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(CGSize(width: rect.size.width / scale, height: rect.size.height / scale), true, 0.0)
         image.draw(at: CGPoint(x: -rect.origin.x / scale, y: -rect.origin.y / scale))
         let croppedImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return croppedImage!
+        return croppedImage
     }
     
     func updateUI() {
         screenCoordinates.text = screenCoordinateString
         imageCoordinates.text = imageCoordinateString
+        croppedImageCoordinateLabel.text = cropViewRectString
     }
     
     // Resize the image View to reflect the Aspect Ratio of the selected image
@@ -249,11 +261,27 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         let aspectRatio = (image.size.width / image.size.height)
         print("Image Aspect Ratio (width/height): \(aspectRatio)")
         let imageHeightDivWidth = image.size.height / image.size.width
-        let adjustedImageViewHeightPixels = imageHeightDivWidth * view.frame.width
+        var adjustedImageViewHeightPixels = imageHeightDivWidth * view.frame.width
+        let maxHeight = Int((view.frame.height - 200) / 2)
+        // If the view is taller than half of the screen - the navigation bar (80) then constrain the height and adjust the width to maintain the aspect ratio so we have enough room to layout the controls below the cropped image
+        if Int(adjustedImageViewHeightPixels) > maxHeight {
+            print("newHeight > maxHeight")
+            adjustedImageViewHeightPixels = CGFloat(maxHeight)
+            let adjustedWidth = CGFloat(maxHeight) * aspectRatio
+            print("adjustedWidth: \(adjustedWidth)")
+            let padding = (view.frame.size.width - adjustedWidth) / 2
+            imageViewLeadingConstraint.constant = padding
+            imageViewTrailingConstraint.constant = -padding
+            imageViewSize = CGSize(width: adjustedWidth, height: CGFloat(maxHeight))
+        } else {
+            imageViewLeadingConstraint.constant = 0
+            imageViewTrailingConstraint.constant = 0
+            imageViewSize = CGSize(width: view.frame.width, height: adjustedImageViewHeightPixels)
+        }
         print("imageHeightDivWidth: \(imageHeightDivWidth)")
         print("adjustedImageViewHeightPixels: \(adjustedImageViewHeightPixels)")
+        print("imageView.frame.size: \(imageView.frame.size)")
         imageViewHeightConstraint?.constant = adjustedImageViewHeightPixels
-        updateUI()
     }
     
     
@@ -263,23 +291,31 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         resizeImageView(image: image)
         // change this value as you want!
         print("cropRect: \(cropRect)")
-        let croppedImage: UIImage
+        let croppedImage: UIImage?
         print("croppedImage.size: \(image.size)")
         print("croppedImage.scale: \(image.scale)")
         print("imageView.frame: \(imageView.frame)")
         print("croppedImageView.frame: \(croppedImageView.frame)")
       
-        if useMethod1 {
-            let factor = view.frame.width/image.size.width
-            let factorY = view.frame.height / image.size.height
-            print("factorX: \(factor)")
-            let rect = CGRect(x: cropRect.origin.x / factor, y: cropRect.origin.y / factor, width: cropRect.width / factor, height: cropRect.height / factor)
-            print("adjusted Rect for Crop: \(rect)")
-            croppedImage = cropImage1(image: image, rect: rect)
-        } else {
+//        if useMethod1 {
+//            let factor = imageView.frame.width / image.size.width
+//            print("factorX: \(factor)")
+//            let imageBasedOriginY = cropRect.origin.y / factor
+//            print("imageBasedOriginY: \(imageBasedOriginY)")
+//            let cgCoordinateImageBasedOriginY = image.size.height - imageBasedOriginY
+//            print("cgCoordinate image based OriginY: ")
+//            let rect = CGRect(x: cropRect.origin.x / factor, y: cropRect.origin.y / factor, width: cropRect.width / factor, height: cropRect.height / factor)
+//            print("adjusted Rect for Crop: \(rect)")
+//            let cropImageCoordinateString = "\(String(format: "%d", Int(rect.origin.x))), \(String(format: "%d", Int(rect.origin.y))), \(String(format: "%d", Int(rect.size.width))), \(String(format: "%d", Int(rect.size.height)))"
+//            croppedImageCoordinateLabel.text = cropImageCoordinateString
+//            croppedImage = cgImageCrop(image: image, rect: rect)
+//        } else {
+        
             let scale = imageView.frame.width/image.size.width
-            croppedImage = cropImage2(image: image, rect: cropRect, scale: scale)
-        }
+            print("imageView.frame.width: \(imageView.frame.width)")
+            print("cropImage scale: \(scale)")
+            croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
+//        }
         
         
 //        let croppedFrame = CGRect(x: imageView.frame.origin.x + cropRect.origin.x, y: imageView.frame.origin.y + cropRect.origin.y, width: cropRect.width, height: cropRect.height)
@@ -291,6 +327,7 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         print("adjustedCropRect: \(adjustedCropRect)")
         addCropRectangle(cropRect)
         self.croppedImageView.image = croppedImage
+        updateUI()
 //        croppedImageViewWidth.constant = cropRect.width
 //        croppedImageViewHeight.constant = cropRect.height
     }
