@@ -211,16 +211,22 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     
     
     // Crop an image at the specified rect, using CGImage Crop
-//    func cgImageCrop(image: UIImage, rect: CGRect) -> UIImage? {
-//        let cgImage = image.cgImage!
-//        if let croppedCGImage = cgImage.cropping(to: rect) {
-//            debugPrint("imageOrientation: \(image.debugPrintOrientation())")
-//            return UIImage(cgImage: croppedCGImage, scale: image.scale, orientation: image.imageOrientation)
-//        } else {
-//            return nil
-//        }
-//
-//    }
+    func cgImageCrop(image: UIImage, rect: CGRect, scale: CGFloat) -> UIImage? {
+        guard let cgImage = image.cgImage else {
+            return nil
+        }
+        let imagePixelrect = CGRect(x: rect.origin.x / scale, y: rect.origin.y / scale, width: rect.width / scale, height: rect.height / scale)
+        print("image Pixel adjusted Rect for Crop: \(imagePixelrect)")
+        if let croppedCGImage = cgImage.cropping(to: rect) {
+            debugPrint("-- cgImageCrop scale: \(scale)")
+            debugPrint("-- cgImageCrop image.scale: \(image.scale)")
+            debugPrint("-- cgImageCrop imageOrientation: \(image.debugPrintOrientation())")
+            return UIImage(cgImage: croppedCGImage, scale: image.scale, orientation: image.imageOrientation)
+        } else {
+            return nil
+        }
+
+    }
     
     // Crop an image at the specified rect, using ImageContext cropping
     func imageContextCrop(image: UIImage, rect: CGRect, scale: CGFloat) -> UIImage? {
@@ -287,7 +293,11 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         let scale = imageView.frame.width / image.size.width
         print("imageView.frame.width: \(imageView.frame.width)")
         print("cropImage scale: \(scale)")
-        croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
+        if false {
+            croppedImage = cgImageCrop(image: image, rect: cropRect, scale: scale)
+        } else {
+            croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
+        }
         addCropRectangle(cropRect)
         self.croppedImageView.image = croppedImage
         updateUI()

@@ -44,9 +44,9 @@ extension UIImage {
         }
     }
 
-    /// Second way to crop an image
+    /// Crop an image using ImageContext based on the aspect Ratio of the
     /// rect -> rectangle in the images coordinates (pixels) not screen coordinates (points)
-    /// let scale = imageView.frame.width/image.size.width
+    /// let scale = imageView.frame.width / image.size.width
     func imageContextCrop(rect: CGRect, scale: CGFloat) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(CGSize(width: rect.size.width / scale, height: rect.size.height / scale), true, 0.0)
         self.draw(at: CGPoint(x: -rect.origin.x / scale, y: -rect.origin.y / scale))
