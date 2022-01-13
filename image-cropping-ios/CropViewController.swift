@@ -22,10 +22,6 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     let imagePicker = UIImagePickerController()
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var croppedImageView: UIImageView!
-    @IBOutlet weak var xTextField: UITextField!
-    @IBOutlet weak var yTextField: UITextField!
-    @IBOutlet weak var widthTextField: UITextField!
-    @IBOutlet weak var heightTextField: UITextField!
     
     @IBOutlet weak var screenCoordinates: UILabel!
     @IBOutlet weak var imageCoordinates: UILabel!
@@ -117,23 +113,15 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         croppedImageView.layer.borderColor = UIColor.black.cgColor
         croppedImageView.layer.borderWidth = 1
         croppedImageView.contentMode = .scaleAspectFit
-        setupTextFields()
         self.selectedImage = self.imageView.image
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         guard let selectedImage = selectedImage else {
             return
         }
         doCropImage(image: selectedImage)
-    }
-    
-    func setupTextFields() {
-        xTextField.delegate = self
-        yTextField.delegate = self
-        widthTextField.delegate = self
-        heightTextField.delegate = self
-        xTextField.text = String(format: "%d", Int(cropRect.origin.x))
-        yTextField.text = String(format: "%d", Int(cropRect.origin.y))
-        widthTextField.text = String(format: "%d", Int(cropRect.size.width))
-        heightTextField.text = String(format: "%d", Int(cropRect.size.height))
     }
     
     @IBAction func onSelectImage(_ sender: Any) {
@@ -169,7 +157,6 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
                 return
             }
             doCropImage(image: selectedImage)
-            setupTextFields()
         }
         if pinchGesture.state == .cancelled || pinchGesture.state == .ended || pinchGesture.state == .failed {
             pinching = false
@@ -191,7 +178,6 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
             return
         }
         doCropImage(image: selectedImage)
-        setupTextFields()
     }
     
     /// Returns the Gold Bounding Rectangle to indicate a selection
@@ -282,6 +268,7 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         print("adjustedImageViewHeightPixels: \(adjustedImageViewHeightPixels)")
         print("imageView.frame.size: \(imageView.frame.size)")
         imageViewHeightConstraint?.constant = adjustedImageViewHeightPixels
+        view.layoutIfNeeded()   // call this to force the imageView to update which we rely on in doCropImage to figure out the aspect Ratio
     }
     
     
@@ -297,30 +284,11 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         print("imageView.frame: \(imageView.frame)")
         print("croppedImageView.frame: \(croppedImageView.frame)")
       
-//        if useMethod1 {
-//            let factor = imageView.frame.width / image.size.width
-//            print("factorX: \(factor)")
-//            let imageBasedOriginY = cropRect.origin.y / factor
-//            print("imageBasedOriginY: \(imageBasedOriginY)")
-//            let cgCoordinateImageBasedOriginY = image.size.height - imageBasedOriginY
-//            print("cgCoordinate image based OriginY: ")
-//            let rect = CGRect(x: cropRect.origin.x / factor, y: cropRect.origin.y / factor, width: cropRect.width / factor, height: cropRect.height / factor)
-//            print("adjusted Rect for Crop: \(rect)")
-//            let cropImageCoordinateString = "\(String(format: "%d", Int(rect.origin.x))), \(String(format: "%d", Int(rect.origin.y))), \(String(format: "%d", Int(rect.size.width))), \(String(format: "%d", Int(rect.size.height)))"
-//            croppedImageCoordinateLabel.text = cropImageCoordinateString
-//            croppedImage = cgImageCrop(image: image, rect: rect)
-//        } else {
+        let scale = imageView.frame.width/image.size.width
+        print("imageView.frame.width: \(imageView.frame.width)")
+        print("cropImage scale: \(scale)")
+        croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
         
-            let scale = imageView.frame.width/image.size.width
-            print("imageView.frame.width: \(imageView.frame.width)")
-            print("cropImage scale: \(scale)")
-            croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
-//        }
-        
-        
-//        let croppedFrame = CGRect(x: imageView.frame.origin.x + cropRect.origin.x, y: imageView.frame.origin.y + cropRect.origin.y, width: cropRect.width, height: cropRect.height)
-            
-//            let factor = imageView.frame.width/image.size.width
         let adjustedCropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.width , height: cropRect.height)
         // Disable Existing Constraints so we can programmatically adjust them after the fact
         
@@ -328,8 +296,6 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         addCropRectangle(cropRect)
         self.croppedImageView.image = croppedImage
         updateUI()
-//        croppedImageViewWidth.constant = cropRect.width
-//        croppedImageViewHeight.constant = cropRect.height
     }
     
     // Override touchesBegan in the textfields parent UIViewController to dismiss the keyboard when tapping outside of any textfield
@@ -374,24 +340,5 @@ extension CropViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
                 return true
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == xTextField, let textFieldString = textField.text, let xValue = Int(textFieldString), xValue > 0 {
-            cropRect = CGRect(x: CGFloat(xValue), y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height)
-        }
-        if textField == yTextField, let textFieldString = textField.text, let yValue = Int(textFieldString), yValue > 0 {
-            cropRect = CGRect(x: cropRect.origin.x, y: CGFloat(yValue), width: cropRect.size.width, height: cropRect.size.height)
-        }
-        if textField == widthTextField, let textFieldString = textField.text, let widthValue = Int(textFieldString), widthValue > 0 {
-            cropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: CGFloat(widthValue), height: cropRect.size.height)
-        }
-        if textField == heightTextField, let textFieldString = textField.text, let heightValue = Int(textFieldString), heightValue > 0 {
-            cropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: CGFloat(heightValue))
-        }
-        guard let selectedImage = selectedImage else {
-            return
-        }
-        doCropImage(image: selectedImage)
     }
 }
