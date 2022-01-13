@@ -284,15 +284,10 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         print("imageView.frame: \(imageView.frame)")
         print("croppedImageView.frame: \(croppedImageView.frame)")
       
-        let scale = imageView.frame.width/image.size.width
+        let scale = imageView.frame.width / image.size.width
         print("imageView.frame.width: \(imageView.frame.width)")
         print("cropImage scale: \(scale)")
         croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
-        
-        let adjustedCropRect = CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.width , height: cropRect.height)
-        // Disable Existing Constraints so we can programmatically adjust them after the fact
-        
-        print("adjustedCropRect: \(adjustedCropRect)")
         addCropRectangle(cropRect)
         self.croppedImageView.image = croppedImage
         updateUI()

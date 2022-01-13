@@ -33,7 +33,7 @@ extension UIImage {
     /// Crop an image at the specified rect and return the cropped Image
     /// image -> image to be cropped
     /// rect -> rectangle in the images coordinates (pixels) not screen coordinates (points)
-    func cropImage(rect: CGRect) -> UIImage? {
+    func cgImageCrop(rect: CGRect) -> UIImage? {
         guard let cgImage = self.cgImage else {
             return nil
         }
@@ -47,7 +47,7 @@ extension UIImage {
     /// Second way to crop an image
     /// rect -> rectangle in the images coordinates (pixels) not screen coordinates (points)
     /// let scale = imageView.frame.width/image.size.width
-    func cropImage2(rect: CGRect, scale: CGFloat) -> UIImage? {
+    func imageContextCrop(rect: CGRect, scale: CGFloat) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(CGSize(width: rect.size.width / scale, height: rect.size.height / scale), true, 0.0)
         self.draw(at: CGPoint(x: -rect.origin.x / scale, y: -rect.origin.y / scale))
         let croppedImage = UIGraphicsGetImageFromCurrentImageContext()
