@@ -80,7 +80,12 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     }
     
     var cropViewRectString: String {
-        return "\(String(format: "%d", Int(cropRect.origin.x))), \(String(format: "%d", Int(cropRect.origin.y))), \(String(format: "%d", Int(cropRect.size.width))), \(String(format: "%d", Int(cropRect.size.height)))"
+        var imageCropRectString = ""
+        if let selectedImageWidth = selectedImage?.size.width {
+            let scale = imageView.frame.size.width / selectedImageWidth
+            imageCropRectString = "\(Int(cropRect.origin.x / scale)), \(Int(cropRect.origin.y / scale)), \(Int(cropRect.size.width / scale)), \(Int(cropRect.size.height / scale)),"
+        }
+        return "Screen: \(String(format: "%d", Int(cropRect.origin.x))), \(String(format: "%d", Int(cropRect.origin.y))), \(String(format: "%d", Int(cropRect.size.width))), \(String(format: "%d", Int(cropRect.size.height))) Image: \(imageCropRectString)"
     }
 
     

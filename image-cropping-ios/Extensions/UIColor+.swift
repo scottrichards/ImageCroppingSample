@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 
 extension UIColor {
+    
     func hexStringFromColor() -> String {
         let components = self.cgColor.components
         let r: CGFloat = components?[0] ?? 0.0
