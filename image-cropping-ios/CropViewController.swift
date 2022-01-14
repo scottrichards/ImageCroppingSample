@@ -31,6 +31,8 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var croppedImageCoordinateLabel: UILabel!
     @IBOutlet weak var imageViewLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var colorSampleImageView: UIImageView!
+    @IBOutlet weak var colorSampleLabel: UILabel!
     
     var croppedImageViewSize: CGSize = CGSize(width: 50.0, height: 50.0) {
         didSet {
@@ -298,8 +300,13 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         } else {
 //            croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
             croppedImage = image.imageContextCrop(rect: cropRect, scale: scale)
+            
         }
         addCropRectangle(cropRect)
+        if let cropColor = croppedImage?.averageColor {
+            colorSampleImageView.backgroundColor = cropColor
+            colorSampleLabel.text = cropColor.hexStringFromColor()
+        }
         self.croppedImageView.image = croppedImage
         updateUI()
     }
