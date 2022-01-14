@@ -228,14 +228,14 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
 
     }
     
-    // Crop an image at the specified rect, using ImageContext cropping
-    func imageContextCrop(image: UIImage, rect: CGRect, scale: CGFloat) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: rect.size.width / scale, height: rect.size.height / scale), true, 0.0)
-        image.draw(at: CGPoint(x: -rect.origin.x / scale, y: -rect.origin.y / scale))
-        let croppedImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return croppedImage
-    }
+//    // Crop an image at the specified rect, using ImageContext cropping
+//    func imageContextCrop(image: UIImage, rect: CGRect, scale: CGFloat) -> UIImage? {
+//        UIGraphicsBeginImageContextWithOptions(CGSize(width: rect.size.width / scale, height: rect.size.height / scale), true, 0.0)
+//        image.draw(at: CGPoint(x: -rect.origin.x / scale, y: -rect.origin.y / scale))
+//        let croppedImage = UIGraphicsGetImageFromCurrentImageContext()
+//        UIGraphicsEndImageContext()
+//        return croppedImage
+//    }
     
     func updateUI() {
         screenCoordinates.text = screenCoordinateString
@@ -296,7 +296,8 @@ class CropViewController: UIViewController, UINavigationControllerDelegate {
         if false {
             croppedImage = cgImageCrop(image: image, rect: cropRect, scale: scale)
         } else {
-            croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
+//            croppedImage = imageContextCrop(image: image, rect: cropRect, scale: scale)
+            croppedImage = image.imageContextCrop(rect: cropRect, scale: scale)
         }
         addCropRectangle(cropRect)
         self.croppedImageView.image = croppedImage

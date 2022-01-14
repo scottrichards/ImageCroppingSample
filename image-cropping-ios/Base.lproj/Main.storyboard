@@ -52,10 +52,7 @@
                                 </connections>
                             </segmentedControl>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="008-ML-Mbu">
-                                <rect key="frame" x="106.5" y="674" width="201" height="20"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="201" id="Lkd-f9-mpt"/>
-                                </constraints>
+                                <rect key="frame" x="20" y="674" width="374" height="20"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -101,6 +98,7 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="008-ML-Mbu" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="6Pj-na-FTg"/>
                             <constraint firstItem="mPB-Cu-ffE" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="GPb-mk-29S"/>
                             <constraint firstItem="008-ML-Mbu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="HeH-RV-rU0"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2ai-GA-H7j" secondAttribute="trailing" constant="20" id="LCn-Aq-5nd"/>
@@ -111,6 +109,7 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Cuc-DH-l1f" secondAttribute="trailing" constant="20" id="Ywh-fM-p6w"/>
                             <constraint firstItem="LnO-ZQ-VTg" firstAttribute="top" secondItem="Cuc-DH-l1f" secondAttribute="bottom" constant="8" symbolic="YES" id="c3c-8s-beR"/>
                             <constraint firstItem="mPB-Cu-ffE" firstAttribute="top" secondItem="LnO-ZQ-VTg" secondAttribute="bottom" constant="70" id="ggs-2w-54x"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="008-ML-Mbu" secondAttribute="trailing" constant="20" id="iAu-8q-XLz"/>
                             <constraint firstItem="008-ML-Mbu" firstAttribute="top" secondItem="mPB-Cu-ffE" secondAttribute="bottom" constant="20" id="j0G-W2-OIg"/>
                             <constraint firstItem="56b-Us-K8w" firstAttribute="top" secondItem="LnO-ZQ-VTg" secondAttribute="bottom" constant="22" id="kj9-8P-FME"/>
                             <constraint firstItem="2ai-GA-H7j" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="o7a-Jt-Ua2"/>

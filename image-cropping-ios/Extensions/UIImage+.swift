@@ -55,6 +55,14 @@ extension UIImage {
         return croppedImage
     }
     
+    /// Crop an image using ImageContext based on the aspect Ratio of the
+    /// rect -> rectangle in the images coordinates (pixels) not screen coordinates (points)
+    /// let scale = imageView.frame.width / image.size.width
+    func imageContextCrop(rect: CGRect, imageView: UIImageView) -> UIImage? {
+        let scale = imageView.frame.width / self.size.width
+        return imageContextCrop(rect: rect, scale: scale)
+    }
+    
     func debugPrintOrientation() -> String {
         switch self.imageOrientation {
         case .up : return "up"
@@ -66,5 +74,19 @@ extension UIImage {
         case .right: return "right"
         case .rightMirrored: return "rightMirrored"
         }
+    }
+    
+    var averageColor: UIColor? {
+        guard let inputImage = CIImage(image: self) else { return nil }
+        let extentVector = CIVector(x: inputImage.extent.origin.x, y: inputImage.extent.origin.y, z: inputImage.extent.size.width, w: inputImage.extent.size.height)
+
+        guard let filter = CIFilter(name: "CIAreaAverage", parameters: [kCIInputImageKey: inputImage, kCIInputExtentKey: extentVector]) else { return nil }
+        guard let outputImage = filter.outputImage else { return nil }
+
+        var bitmap = [UInt8](repeating: 0, count: 4)
+        let context = CIContext(options: [.workingColorSpace: kCFNull])
+        context.render(outputImage, toBitmap: &bitmap, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBA8, colorSpace: nil)
+
+        return UIColor(red: CGFloat(bitmap[0]) / 255, green: CGFloat(bitmap[1]) / 255, blue: CGFloat(bitmap[2]) / 255, alpha: CGFloat(bitmap[3]) / 255)
     }
 }
